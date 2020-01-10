@@ -12,7 +12,7 @@
 Summary: Utilities for monitoring process activities
 Name: psacct
 Version: 6.3.2
-Release: 63%{?dist}
+Release: 63%{?dist}.1
 # alloca.c and part of common.c has Public Domain license
 License: GPLv2+ and Public Domain
 Group: Applications/System
@@ -36,6 +36,7 @@ Patch9: acct-6.3.2-sa_manpage.patch
 # to display the pid and ppid number
 Patch10: psacct-6.3.2-ppid.patch
 Patch11: psacct-6.3.2-man-pages.patch
+Patch12: psacct-6.3.2-acetime-v3-float.patch
 
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: /sbin/chkconfig /sbin/install-info
@@ -72,6 +73,7 @@ commands.
 %patch9 -p1 -b .pct
 %patch10 -p1 -b .acct
 %patch11 -p1 -b .new
+%patch12 -p1 -b .acetime-float
 
 %build
 %if ! %{FHS_compliant}
@@ -186,6 +188,10 @@ fi
 %{_infodir}/accounting.info.gz
 
 %changelog
+* Tue Jun 05 2012 Jaromir Capik <jcapik@redhat.com> - 6.2.3-63.el6_1.1
+- Resolves: rhbz#828725
+- workaround for incorrect ac_etime type detection
+
 * Mon Apr 19 2010 Ivana Hutarova Varekova <varekova@redhat.com> - 6.2.3-63
 - Related: # 575762
   fix the initscript output
