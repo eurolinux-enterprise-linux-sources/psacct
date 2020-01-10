@@ -12,7 +12,7 @@
 Summary: Utilities for monitoring process activities
 Name: psacct
 Version: 6.3.2
-Release: 63%{?dist}.1
+Release: 63%{?dist}.3
 # alloca.c and part of common.c has Public Domain license
 License: GPLv2+ and Public Domain
 Group: Applications/System
@@ -37,6 +37,8 @@ Patch9: acct-6.3.2-sa_manpage.patch
 Patch10: psacct-6.3.2-ppid.patch
 Patch11: psacct-6.3.2-man-pages.patch
 Patch12: psacct-6.3.2-acetime-v3-float.patch
+Patch13: psacct-6.3.2-dump-utmp-ut_time-crash-ppc64.patch
+Patch14: psacct-6.3.2-sa-parse_acct_entries-rec_v3-ac_uid.patch
 
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: /sbin/chkconfig /sbin/install-info
@@ -74,6 +76,8 @@ commands.
 %patch10 -p1 -b .acct
 %patch11 -p1 -b .new
 %patch12 -p1 -b .acetime-float
+%patch13 -p1 -b .ut_time-crash
+%patch14 -p1 -b .rec_v3-ac_uid
 
 %build
 %if ! %{FHS_compliant}
@@ -188,15 +192,24 @@ fi
 %{_infodir}/accounting.info.gz
 
 %changelog
-* Tue Jun 05 2012 Jaromir Capik <jcapik@redhat.com> - 6.2.3-63.el6_1.1
-- Resolves: rhbz#828725
+* Tue Jul 10 2012 Jaromir Capik <jcapik@redhat.com> - 6.3.2-63.el6_3.3
+- Resolves: rhbz#838998
+- Fixing 'sa -u' SIGSEGVs & wrong UIDs
+- Fixing the ChengeLog version typos ... 6.2.3 -> 6.3.2
+
+* Tue Jun 20 2012 Jaromir Capik <jcapik@redhat.com> - 6.3.2-63.el6_3.2
+- Resolves: rhbz#834217
+- Fixes dump-utmp Segmentation fault on ppc64
+
+* Tue Jun 05 2012 Jaromir Capik <jcapik@redhat.com> - 6.3.2-63.el6_3.1
+- Resolves: rhbz#828728
 - workaround for incorrect ac_etime type detection
 
-* Mon Apr 19 2010 Ivana Hutarova Varekova <varekova@redhat.com> - 6.2.3-63
+* Mon Apr 19 2010 Ivana Hutarova Varekova <varekova@redhat.com> - 6.3.2-63
 - Related: # 575762
   fix the initscript output
 
-* Mon Apr 19 2010 Ivana Hutarova Varekova <varekova@redhat.com> - 6.2.3-62
+* Mon Apr 19 2010 Ivana Hutarova Varekova <varekova@redhat.com> - 6.3.2-62
 - Resolves: # 575762
   fix initscript
 
