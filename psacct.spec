@@ -12,7 +12,7 @@
 Summary: Utilities for monitoring process activities
 Name: psacct
 Version: 6.3.2
-Release: 63%{?dist}.3
+Release: 70%{?dist}
 # alloca.c and part of common.c has Public Domain license
 License: GPLv2+ and Public Domain
 Group: Applications/System
@@ -39,6 +39,8 @@ Patch11: psacct-6.3.2-man-pages.patch
 Patch12: psacct-6.3.2-acetime-v3-float.patch
 Patch13: psacct-6.3.2-dump-utmp-ut_time-crash-ppc64.patch
 Patch14: psacct-6.3.2-sa-parse_acct_entries-rec_v3-ac_uid.patch
+Patch15: psacct-6.3.2-sa-man-other-file.patch
+Patch16: psacct-6.3.2-lastcomm-sigsegv-non-acct-file.patch
 
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: /sbin/chkconfig /sbin/install-info
@@ -78,6 +80,8 @@ commands.
 %patch12 -p1 -b .acetime-float
 %patch13 -p1 -b .ut_time-crash
 %patch14 -p1 -b .rec_v3-ac_uid
+%patch15 -p1
+%patch16 -p1
 
 %build
 %if ! %{FHS_compliant}
@@ -107,7 +111,7 @@ rm -f $RPM_BUILD_ROOT%{_infodir}/dir
 
 gzip -9f $RPM_BUILD_ROOT%{_infodir}/*
 mkdir -p $RPM_BUILD_ROOT%{accounting_logdir}
-touch $RPM_BUILD_ROOT%{accounting_logdir}/pacct
+touch $RPM_BUILD_ROOT%{accounting_logdir}/pacct && chmod 0600 $RPM_BUILD_ROOT%{accounting_logdir}/pacct
 
 # Create logrotate config file
 mkdir -p $RPM_BUILD_ROOT/etc/logrotate.d
@@ -126,7 +130,9 @@ cat > $RPM_BUILD_ROOT/etc/logrotate.d/psacct <<EOF
     rotate 31
     create 0600 root root
     postrotate
-       %{_sbindir}/accton %{accounting_logdir}/pacct
+       if [ -f /var/lock/subsys/psacct ]; then
+         %{_sbindir}/accton %{accounting_logdir}/pacct
+       fi
     endscript
 }     
 EOF
@@ -152,7 +158,7 @@ if [ $1 = 0 ]; then
   }
   /sbin/install-info %{_infodir}/accounting.info.gz %{_infodir}/dir --entry="* accounting: (accounting).            The GNU Process Accounting Suite."
 fi
-touch %{accounting_logdir}/pacct
+touch %{accounting_logdir}/pacct && chmod 0600 %{accounting_logdir}/pacct
 
 %preun
 if [ $1 = 0 ]; then
@@ -192,17 +198,33 @@ fi
 %{_infodir}/accounting.info.gz
 
 %changelog
-* Tue Jul 10 2012 Jaromir Capik <jcapik@redhat.com> - 6.3.2-63.el6_3.3
-- Resolves: rhbz#838998
+* Mon Oct 24 2016 Jan Rybar <jrybar@redhat.com> -6.3.2-70
+- lastcomm crashes with segfault on read of acct-non-compliant file
+- Resolves: rhbz#1343841
+
+* Wed Oct 19 2016 Jan Rybar <jrybar@redhat.com> - 6.3.2-69
+- File /etc/logrotate.d/psacct installed with accton auto-restart glitch
+- Resolves: rhbz#1320096
+
+* Mon Oct 10 2016 Jan Rybar <jrybar@redhat.com> - 6.3.2-68
+- Resolves: rhbz#1300192
+- Fixing option description in sa manpage
+
+* Wed Sep 14 2016 Jan Rybar <jrybar@redhat.com> - 6.3.2-67
+- Resolves: rhbz#1182317
+- File /var/account/pacct was installed with incorrect permissions
+
+* Tue Jul 10 2012 Jaromir Capik <jcapik@redhat.com> - 6.3.2-66
+- Resolves: rhbz#837621
 - Fixing 'sa -u' SIGSEGVs & wrong UIDs
 - Fixing the ChengeLog version typos ... 6.2.3 -> 6.3.2
 
-* Tue Jun 20 2012 Jaromir Capik <jcapik@redhat.com> - 6.3.2-63.el6_3.2
-- Resolves: rhbz#834217
+* Wed Jun 20 2012 Jaromir Capik <jcapik@redhat.com> - 6.3.2-65
+- Resolves: rhbz#831245
 - Fixes dump-utmp Segmentation fault on ppc64
 
-* Tue Jun 05 2012 Jaromir Capik <jcapik@redhat.com> - 6.3.2-63.el6_3.1
-- Resolves: rhbz#828728
+* Tue Jun 05 2012 Jaromir Capik <jcapik@redhat.com> - 6.3.2-64
+- Resolves: rhbz#740080
 - workaround for incorrect ac_etime type detection
 
 * Mon Apr 19 2010 Ivana Hutarova Varekova <varekova@redhat.com> - 6.3.2-63
