@@ -1,0 +1,16 @@
+diff -up acct-6.6.1/file_rd.c.ori acct-6.6.1/file_rd.c
+--- acct-6.6.1/file_rd.c.ori	2017-03-20 17:03:35.167177224 +0100
++++ acct-6.6.1/file_rd.c	2017-03-20 17:03:40.468155269 +0100
+@@ -118,8 +118,11 @@ char *file_reader_get_entry(struct file_
+                               ? max_recs
+                               : fri->buffered_records);
+ 
+-              /* Move back in the file */
++              /* Preventing SEGV when incomplete record appears */
++              if (recs_to_read==0)
++              goto no_more_records;
+ 
++              /* Move back in the file */
+               (void)fseek(fri->fp, -fri->record_size * recs_to_read,
+                           SEEK_CUR);
+ 

@@ -1,0 +1,35 @@
+From 8280180feda889a1529844d71d03582021f7d207 Mon Sep 17 00:00:00 2001
+From: Jan Chaloupka <jchaloup@redhat.com>
+Date: Mon, 27 Apr 2015 15:08:57 +0200
+Subject: [PATCH] dump-acct to dump-utmp
+
+---
+ dump-utmp.8 | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/dump-utmp.8 b/dump-utmp.8
+index 829031f..fc4fad2 100644
+--- a/dump-utmp.8
++++ b/dump-utmp.8
+@@ -4,7 +4,7 @@
+ dump-utmp \- print an utmp file in human-readable format.
+ 
+ .SH SYNOPSIS
+-.B dump-acct
++.B dump-utmp
+ .RB [\| \-r \||\| \-\-reverse \|]
+ .RB [\| \-R \||\| \-\-raw \|]
+ .RB [\| \-n \||\| \-\-num
+@@ -14,7 +14,7 @@ dump-utmp \- print an utmp file in human-readable format.
+ .IR files \|]
+ 
+ .SH DESCRIPTION
+-.B dump-acct
++.B dump-utmp
+ .I filename
+ prints a list of all logins. This list is usually written in
+ .IR /var/log/wtmp .
+-- 
+1.9.3
+
+

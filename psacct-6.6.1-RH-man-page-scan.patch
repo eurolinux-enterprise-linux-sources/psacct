@@ -1,0 +1,167 @@
+diff -Naur acct-6.6.1.orig/ac.c acct-6.6.1/ac.c
+--- acct-6.6.1.orig/ac.c	2011-03-16 23:50:13.000000000 +0100
++++ acct-6.6.1/ac.c	2013-07-31 16:44:17.859142249 +0200
+@@ -343,12 +343,29 @@
+ 
+ void give_usage(void)
+ {
+-  (void)printf("\
+-                Usage: %s [-dhpVy] [-f <file>] [people] ...\n\
+-                [--daily-totals] [--individual-totals] [--file <file>]\n\
+-                [--complain] [--reboots] [--supplants] [--timewarps] [--print-year]\n\
+-                [--compatibility] [--print-zeros] [--debug] [--tw-leniency <value>]\n\
+-                [--tw-suspicious <value>] [--version] [--help]\n", program_name);
++  (void)printf(
++  "\n"
++  "Usage: %s [OPTION] ...\n"
++  "\n"
++  "OPTIONS:\n"
++  "  -d, --daily-totals        Print totals for each day\n"
++  "  -p, --individual-totals   Print time totals for each user\n"
++  "  -f, --file <file>         Read from <file>\n"
++  "  --complain                Print errors for whatever problem\n"
++  "  --reboots                 Count the time between login and reboot\n"
++  "  --supplants               Count the time between logins on the terminal\n"
++  "  --timewarps               Count the time between login and time warp\n"
++  "  --compatibility           Shortcut for --reboots --supplants --timewarps\n"
++  "  -a, --all-days            Do not skip days without login activity\n"
++  "  --tw-leniency <value>     Set the time warp leniency <value> in seconds\n"
++  "  --tw-suspicious <value>   Set the time warp suspicious <value> in seconds\n"
++  "  --print-year              Print year when displaying dates\n"
++  "  --print-zeros             Don't suppress zeros in category totals\n"
++  "  --debug                   Print verbose internal information\n"
++  "  -V, --version             Show version and exit\n"
++  "  -h, --help                Show help and exit\n"
++  , program_name);
++
+   print_wtmp_file_location();
+ }
+ 
+diff -Naur acct-6.6.1.orig/dump-acct.c acct-6.6.1/dump-acct.c
+--- acct-6.6.1.orig/dump-acct.c	2011-03-16 23:50:13.000000000 +0100
++++ acct-6.6.1/dump-acct.c	2013-07-31 17:45:03.075476755 +0200
+@@ -52,6 +52,7 @@
+ #ifdef LINUX_MULTIFORMAT
+-  printf ("       [--format <version>] [--byteswap]\n");
++  printf ("          [--format <version>] [--byteswap]\n");
+ #endif
++  printf ("          [--ahz <freq>]\n");
+   print_acct_file_location ();
+ }
+ 
+diff -Naur acct-6.6.1.orig/lastcomm.c acct-6.6.1/lastcomm.c
+--- acct-6.6.1.orig/lastcomm.c	2011-03-16 23:50:13.000000000 +0100
++++ acct-6.6.1/lastcomm.c	2013-07-31 18:01:57.772529043 +0200
+@@ -304,7 +304,7 @@
+ #ifdef HAVE_PAGING
+                "[--show-paging] "
+ #endif
+-               "[--version] [--help]\n", program_name);
++               "[--ahz <freq>] [--version] [--help]\n", program_name);
+   print_acct_file_location ();
+ }
+ 
+diff -Naur acct-6.6.1.orig/lastcomm.1 acct-6.6.1/lastcomm.1
+--- acct-6.6.1.orig/lastcomm.1	2013-07-31 15:44:16.000000000 +0200
++++ acct-6.6.1/lastcomm.1	2013-07-31 17:08:33.442122085 +0200
+@@ -18,54 +18,7 @@
+ .I terminal-name ...
+ ]
+ .br
+-[ 
+-.B \-\-strict-match
+-]
+-.br
+-[
+-.B \-\-forwards
+-]
+-.br
+-[
+-.BI \-f " filename"
+-|
+-.BI \-\-file " filename"
+-]
+-[
+-.BI \-\-ahz " hz"
+-]
+-.br
+-[
+-.B \-\-user
+-.I name
+-]
+-[
+-.B \-\-command
+-.I name
+-]
+-[
+-.B \-\-tty
+-.I name
+-]
+-.br
+-[
+-.B \p
+-|
+-.B \-\-show_paging
+-]
+-[
+-.B \-\-debug
+-]
+-[
+-.B \-V
+-|
+-.B \-\-version 
+-]
+-[
+-.B \-h
+-|
+-.B \-\-help 
+-]
++[ OPTION ... ]
+ .ad b
+ .hy 1
+ .SH DESCRIPTION
+@@ -115,10 +68,13 @@
+ .SH OPTIONS
+ .PD 0
+ .TP
+-.B \-\-strict-match
++.B \-\-strict\-match
+ Print only entries that match *all* of the arguments on the command
+ line.
+ .TP
++.B \-\-print\-controls 
++Print control characters.
++.TP
+ .BI \-\-user " name"
+ List records for user with
+ .I name.
+diff -Naur acct-6.6.1.orig/sa.8 acct-6.6.1/sa.8
+--- acct-6.6.1.orig/sa.8	2013-07-31 15:44:16.000000000 +0200
++++ acct-6.6.1/sa.8	2013-07-31 17:19:06.325431034 +0200
+@@ -43,7 +43,7 @@
+ [
+ .B \-i
+ |
+-.B \-\-dont-read-summary-file
++.B \-\-dont-read-summary-files
+ ]
+ .br
+ [
+@@ -282,7 +282,7 @@
+ When using the `\-\-threshold' option, assume that all answers to
+ interactive queries will be affirmative.
+ .TP
+-.B \-i, \-\-dont-read-summary-file
++.B \-i, \-\-dont-read-summary-files
+ Don't read the information in the system's default
+ .I savacct
+ file.
+@@ -386,7 +386,7 @@
+ .I SAVACCT
+ file.
+ .TP
+-.BI \-\-other-file " filename"
++.BI \-\-other-acct-file " filename"
+ Read from the file 
+ .I filename 
+ instead of the system's default
