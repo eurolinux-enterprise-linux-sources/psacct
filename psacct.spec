@@ -1,10 +1,11 @@
 # Our /usr/bin/last is in the SysVInit package
-%define with_last     0
+%global with_last        0
+%global _hardened_build  1
 
 Summary: Utilities for monitoring process activities
 Name: psacct
 Version: 6.6.1
-Release: 8%{?dist}
+Release: 9%{?dist}
 License: GPLv3+
 Group: Applications/System
 URL: http://www.gnu.org/software/acct/
@@ -162,6 +163,10 @@ fi
 
 
 %changelog
+* Wed Oct 01 2014 Jaromir Capik <jcapik@redhat.com> - 6.6.1-9
+- Hardening the build (#1092540)
+- Resolves: rhbz#1092540
+
 * Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 6.6.1-8
 - Mass rebuild 2014-01-24
 
