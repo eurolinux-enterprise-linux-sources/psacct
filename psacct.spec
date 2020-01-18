@@ -1,10 +1,11 @@
 # Our /usr/bin/last is in the SysVInit package
-%define with_last     0
+%global with_last        0
+%global _hardened_build  1
 
 Summary: Utilities for monitoring process activities
 Name: psacct
 Version: 6.6.1
-Release: 8%{?dist}
+Release: 11%{?dist}
 License: GPLv3+
 Group: Applications/System
 URL: http://www.gnu.org/software/acct/
@@ -23,6 +24,7 @@ Patch4: psacct-6.6.1-unnumberedsubsubsec.patch
 Patch5: psacct-6.6.1-RH-man-page-scan.patch
 # Partial replacement for Patch3: psacct-6.3.2-man-pages.patch
 Patch6: psacct-6.6.1-man-dump-acct.patch
+Patch7: psacct-6.6.1-dump-acct-to-dump-utmp.patch
 
 Conflicts: filesystem < 3
 Conflicts: systemd < 39-1
@@ -57,6 +59,7 @@ commands.
 %patch4 -p1 -b .subsubsec
 %patch5 -p1 -b .rh-man-scan
 %patch6 -p1 -b .man-dump-acct
+%patch7 -p1 -b .man-dump-utmp 
 
 # fixing 'gets' undeclared
 sed -i 's|.*(gets,.*||g' lib/stdio.in.h
@@ -84,7 +87,7 @@ cp dump-acct.8 %{buildroot}%{_mandir}/man8/
 rm -f %{buildroot}%{_infodir}/dir
 
 mkdir -p %{buildroot}/var/account
-touch %{buildroot}/var/account/pacct
+touch %{buildroot}/var/account/pacct && chmod 0600 %{buildroot}/var/account/pacct
 
 # create logrotate config file
 mkdir -p %{buildroot}/etc/logrotate.d
@@ -107,7 +110,7 @@ rm -f %{buildroot}%{_bindir}/last %{buildroot}%{_mandir}/man1/last.1*
 %systemd_post psacct.service
 
 /sbin/install-info %{_infodir}/accounting.info %{_infodir}/dir || :
-touch /var/account/pacct
+touch /var/account/pacct && chmod 0600 /var/account/pacct
 
 
 %preun
@@ -162,6 +165,18 @@ fi
 
 
 %changelog
+* Thu Jul 28 2016 Jan Rybar <jrybar@redhat.com> - 6.6.1.11
+- Fixing occurrences of dump-acct in dump-utmp man page
+- Resolves: rhbz#1240948
+ 
+* Tue Jun 28 2016 Jan Rybar <jrybar@redhat.com> - 6.6.1.10
+- Fixing mode assignment of /var/account/pacct
+- Resolves: rhbz#1249665
+
+* Wed Oct 01 2014 Jaromir Capik <jcapik@redhat.com> - 6.6.1-9
+- Hardening the build (#1092540)
+- Resolves: rhbz#1092540
+
 * Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 6.6.1-8
 - Mass rebuild 2014-01-24
 
