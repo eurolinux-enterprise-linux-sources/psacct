@@ -4,7 +4,7 @@
 Summary: Utilities for monitoring process activities
 Name: psacct
 Version: 6.6.1
-Release: 6%{?dist}
+Release: 8%{?dist}
 License: GPLv3+
 Group: Applications/System
 URL: http://www.gnu.org/software/acct/
@@ -162,6 +162,12 @@ fi
 
 
 %changelog
+* Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 6.6.1-8
+- Mass rebuild 2014-01-24
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 6.6.1-7
+- Mass rebuild 2013-12-27
+
 * Wed Aug 21 2013 Jaromir Capik <jcapik@redhat.com> - 6.6.1-6
 - Unifying the default file paths (#985150)
 
